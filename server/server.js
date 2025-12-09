@@ -5,6 +5,7 @@ const authRoutes = require("./routes/authRoutes");
 const testRoutes = require("./routes/testRoutes");
 const jobRoutes = require("./routes/jobRoutes");
 const studentRoutes = require("./routes/studentRoutes");
+const recruiterRoutes = require("./routes/recruiterRoutes");
 
 
 require("dotenv").config();
@@ -19,6 +20,9 @@ app.use("/api/test", testRoutes);
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/jobs", jobRoutes);
 app.use("/api/student", studentRoutes);
+app.use("/uploads", express.static("uploads"));
+app.use("/api/recruiter", recruiterRoutes);
+
 
 // Test route
 app.get("/", (req, res) => {

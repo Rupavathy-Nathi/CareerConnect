@@ -6,7 +6,7 @@ exports.getAllJobs = async(req, res) => {
     res.json(jobs);
 };
 
-exports.applyJob = async(req, res) => {
+exports.applyJobWithResume = async(req, res) => {
     const jobId = req.params.id;
 
     const alreadyApplied = await Application.findOne({
@@ -15,11 +15,12 @@ exports.applyJob = async(req, res) => {
     });
 
     if (alreadyApplied)
-        return res.status(400).json({ message: "Already applied to this job" });
+        return res.status(400).json({ message: "Already applied" });
 
     const application = await Application.create({
         job: jobId,
-        student: req.user.id
+        student: req.user.id,
+        resume: req.file.path
     });
 
     res.status(201).json(application);
