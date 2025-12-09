@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import Navbar from "../components/Navbar";
 
 export default function StudentDashboard() {
   const [jobs, setJobs] = useState([]);
   const [resume, setResume] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchJobs = async () => {
-      const res = await api.get("/student/jobs");
-      setJobs(res.data);
+      try {
+        const res = await api.get("/student/jobs");
+        setJobs(res.data);
+      } catch (err) {
+        setError("Failed to load jobs");
+      } finally {
+        setLoading(false);
+      }
     };
     fetchJobs();
   }, []);
@@ -26,28 +35,39 @@ export default function StudentDashboard() {
       await api.post(`/student/apply/${jobId}`, formData);
       alert("Applied successfully");
     } catch (err) {
-      alert("Already applied");
+      alert("Already applied to this job");
     }
   };
 
+  if (loading) return <p>Loading jobs...</p>;
+  if (error) return <p>{error}</p>;
+
   return (
-    <div>
-      <h2>Available Jobs</h2>
+    <>
+      <Navbar />
 
-      {/* Resume upload ONCE */}
-      <input
-        type="file"
-        onChange={(e) => setResume(e.target.files[0])}
-      />
+      <div>
+        <h2>Available Jobs</h2>
 
-      {jobs.map((job) => (
-        <div key={job._id}>
-          <h4>{job.title}</h4>
-          <p>{job.location}</p>
-          <button onClick={() => applyJob(job._id)}>Apply</button>
-          <hr />
-        </div>
-      ))}
-    </div>
+        {/* Resume upload */}
+        <input
+          type="file"
+          onChange={(e) => setResume(e.target.files[0])}
+        />
+
+        {jobs.length === 0 && <p>No jobs available</p>}
+
+        {jobs.map((job) => (
+          <div key={job._id}>
+            <h4>{job.title}</h4>
+            <p>{job.location}</p>
+            <button onClick={() => applyJob(job._id)}>
+              Apply
+            </button>
+            <hr />
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
