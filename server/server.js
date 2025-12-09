@@ -11,7 +11,13 @@ const recruiterRoutes = require("./routes/recruiterRoutes");
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: [
+        "http://localhost:3000",
+        "https://careerconnect.vercel.app"
+    ],
+    credentials: true
+}));
 app.use(express.json());
 
 // Routes
@@ -34,7 +40,8 @@ mongoose
     .then(() => console.log("MongoDB Connected"))
     .catch((err) => console.log(err));
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
